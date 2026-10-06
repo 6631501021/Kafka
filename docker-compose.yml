@@ -1,0 +1,24 @@
+# Start the existing Kafka project in ~/kafka-docker first.
+services:
+  backend1:
+    build: .
+    command: ["python", "backend1.py"]
+    ports:
+      - "127.0.0.1:8001:8001"
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+    networks: [kafka-network]
+
+  worker:
+    build: .
+    command: ["python", "worker.py"]
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      ROUTER_USER: admin
+      ROUTER_PASSWORD: ${ROUTER_PASSWORD:?Set ROUTER_PASSWORD in .env}
+    networks: [kafka-network]
+
+networks:
+  kafka-network:
+    external: true
+    name: kafka-docker_default
